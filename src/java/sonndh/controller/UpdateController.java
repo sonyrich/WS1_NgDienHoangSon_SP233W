@@ -2,43 +2,46 @@ package sonndh.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import sonndh.registration.RegistrationDAO;
 
-public class MainController extends HttpServlet {
+public class UpdateController extends HttpServlet {
 
-    private final String LOGINPAGE = "login.html";
-    private final String INVALIDPAGE = "invalid.html";
-    private final String LOGINCONTROLLER = "LoginController";
-    private final String SEARCHCONTROLLER = "SearchController";
-    private final String DELETECONTROLLER = "DeleteController";
-    private final String UPDATECONTROLLER = "UpdateController";
+    private final String ERRORPAGE = "updateError.html";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        String url = ERRORPAGE;
         try {
-            String button = request.getParameter("btAction");
-            String url = LOGINPAGE;
-            if (button == null) {
-
-            } else if (button.equals("Login")) {
-                url = LOGINCONTROLLER;
-            } else if (button.equals("Search")) {
-                url = SEARCHCONTROLLER;
-            } else if (button.equals("Del")) {
-                url = DELETECONTROLLER;
-            } else if (button.equals("Update")) {
-                url = UPDATECONTROLLER;
+            String username = request.getParameter("txtUsername");
+            String password = request.getParameter("txtPassword");
+            String searchValue = request.getParameter("lastSearchValue");
+            String isAdmin = request.getParameter("ADMIN");
+            boolean role = false;
+            if (isAdmin != null) {
+                role = true;
             }
 
-            RequestDispatcher rd = request.getRequestDispatcher(url);
-            rd.forward(request, response);
+            RegistrationDAO dao = new RegistrationDAO();
+            boolean result = dao.updateRecord(username, password, role);
+
+            if (result) {
+                url = "MainController?btAction=Search&txtSearchValue="
+                        + searchValue;
+            }
+
+            //test output
+            //out.println(username + " " + password + " " + searchValue + " " + role);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         } finally {
+            response.sendRedirect(url);
             out.close();
         }
     }

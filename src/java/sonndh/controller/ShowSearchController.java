@@ -39,6 +39,7 @@ public class ShowSearchController extends HttpServlet {
                 out.println("<th>Lastname</th>");
                 out.println("<th>Role</th>");
                 out.println("<th>Delete</th>");
+                out.println("<th>Update</th>");
                 out.println("</tr>");
                 out.println("</thead>");
 
@@ -51,28 +52,48 @@ public class ShowSearchController extends HttpServlet {
                             + "&LastSearchValue="
                             + request.getParameter("txtSearchValue");
 
+                    out.println("<form action='MainController'>");
                     out.println("<tr>");
                     out.println("<td>"
                             + ++count
                             + ".</td>");
                     out.println("<td>"
                             + dto.getUsername()
+                            + "<input type='hidden' name='txtUsername' value='"
+                            + dto.getUsername()
+                            + "' />"
                             + "</td>");
                     out.println("<td>"
+                            + "<input type='text' name='txtPassword' value='"
                             + dto.getPassword()
+                            + "' />"
                             + "</td>");
                     out.println("<td>"
                             + dto.getLastname()
                             + "</td>");
-                    out.println("<td>"
-                            + dto.isRole()
-                            + "</td>");
+                    if (dto.isRole()) {
+                        out.println("<td>"
+                                + "<input type='checkbox' name='ADMIN' value='ON' checked='checked' />"
+                                + "</td>");
+                    } else {
+                        out.println("<td>"
+                                + "<input type='checkbox' name='ADMIN' value='ON' />"
+                                + "</td>");
+                    }
+
                     out.println("<td>"
                             + "<a href='"
                             + urlRewriting
                             + "'>Delete</a>"
                             + "</td>");
+                    out.println("<td>"
+                            + "<input type='submit' value='Update' name='btAction' />"
+                            + "<input type='hidden' name='lastSearchValue' value='"
+                            + request.getParameter("txtSearchValue")
+                            + "'/>"
+                            + "</td>");
                     out.println("</tr>");
+                    out.println("</form>");
                 }
                 out.println("</tbody>");
                 out.println("</table>");

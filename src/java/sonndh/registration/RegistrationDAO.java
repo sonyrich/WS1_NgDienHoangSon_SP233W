@@ -125,4 +125,36 @@ public class RegistrationDAO implements Serializable {
         }
         return false;
     }
+
+    public boolean updateRecord(String username, String password, boolean role)
+            throws SQLException {
+        Connection con = null;
+        PreparedStatement stm = null;
+
+        try {
+            con = DBUtils.makeConnection();
+            if (con != null) {
+                String sql = "Update Registration "
+                        + "set password = ?, isAdmin = ? "
+                        + "Where username = ?";
+
+                stm = con.prepareStatement(sql);
+                stm.setString(1, password);
+                stm.setBoolean(2, role);
+                stm.setString(3, username);
+                int row = stm.executeUpdate();
+                if (row > 0) {
+                    return true;
+                }
+            }
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return false;
+    }
 }
